@@ -1,0 +1,38 @@
+# This is used for a school project.
+# NEVER use this in production!
+
+server {
+	listen 80 default_server;
+	listen [::]:80 default_server;
+
+	root /var/www/csv;
+
+	server_name _;
+
+
+	# hardcode the locations for the CSV files
+	location /cases {
+		add_header Content-Disposition 'attachment; filename="eu_ecdc_gisaid_cases.csv"';
+		try_files /eu_ecdc_gisaid_cases.csv =404;
+	}
+
+	location /variants {
+		add_header Content-Disposition 'attachment; filename="eu_ecdc_gisaid_variants.csv"';
+		try_files /eu_ecdc_gisaid_variants.csv =404;
+	}
+
+	location /sequences {
+		add_header Content-Disposition 'attachment; filename="eu_ecdc_gisaid_sequences.csv"';
+		try_files /eu_ecdc_gisaid_sequences.csv =404;
+	}
+
+
+	# Do a reverse proxy for the RShiny application & upgrade the connection for websockets
+	location / {
+		proxy_pass http://localhost:12345;
+		proxy_http_version 1.1;
+		proxy_read_timeout 999999999;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "upgrade";
+	}
+}

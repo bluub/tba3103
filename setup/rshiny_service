@@ -1,0 +1,12 @@
+[Unit]
+Description=Service to start RShiny app
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+User=root
+ExecStart=Rscript /root/rshiny_app/app.R
+
+[Install]
+WantedBy=multi-user.target
